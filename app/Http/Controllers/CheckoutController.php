@@ -2,21 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Business\CartManager;
 use App\Services\PaymentService;
 use App\Services\RedisCartService;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(CartManager $cartManager)
     {
-        $cart = (new RedisCartService())->getCart();
-        return view('checkout.index',['cart' => $cart]);
+        [$cart, $totalPrice] = $cartManager->getCart();
+        $cart_quantity = count($cart);
+        return view('checkout.index',[
+            'cart' => $cart,
+            'cart_quantity' => $cart_quantity,
+            'total_price' => $totalPrice
+        ]);
     }
 
     public function process(Request $request)
     {
-        return (new PaymentService())->start()->getHtmlContent();
+       $data = $request->all();
+        return (new PaymentService())->start($data)->getHtmlContent();
     }
 
     public function success(Request $request)

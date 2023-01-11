@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Config;
+use Iyzipay\Request;
 
 class PaymentService  {
 
@@ -18,13 +19,14 @@ class PaymentService  {
         $this->config = $options;
     }
 
-    public function start()
+    public function start($data)
     {
+        $expiration = str_split($data['cc-expiration'],2);
         $request = new \Iyzipay\Request\CreatePaymentRequest();
         $request->setLocale(\Iyzipay\Model\Locale::TR);
         $request->setConversationId("123456789");
-        $request->setPrice("1");
-        $request->setPaidPrice("1.2");
+        $request->setPrice($data["price"]);
+        $request->setPaidPrice($data["price"]);
         $request->setCurrency(\Iyzipay\Model\Currency::TL);
         $request->setInstallment(1);
         $request->setBasketId("B67832");
@@ -32,11 +34,11 @@ class PaymentService  {
         $request->setPaymentGroup(\Iyzipay\Model\PaymentGroup::PRODUCT);
         $request->setCallbackUrl("http://localhost/checkout/success");
         $paymentCard = new \Iyzipay\Model\PaymentCard();
-        $paymentCard->setCardHolderName("John Doe");
-        $paymentCard->setCardNumber("5526080000000006");
-        $paymentCard->setExpireMonth("12");
-        $paymentCard->setExpireYear("2030");
-        $paymentCard->setCvc("123");
+        $paymentCard->setCardHolderName($data['cc-name']);
+        $paymentCard->setCardNumber($data['cc-number']);
+        $paymentCard->setExpireMonth($expiration[0]);
+        $paymentCard->setExpireYear($expiration[1]);
+        $paymentCard->setCvc($data['cc-cvv']);
         $paymentCard->setRegisterCard(0);
         $request->setPaymentCard($paymentCard);
         $buyer = new \Iyzipay\Model\Buyer();
