@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,10 @@ Route::group(['middleware' => ['guest']], function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::get('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 });
+Route::post('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 
 
 Route::get('/products', [ProductController::class, 'index'])->name('products');

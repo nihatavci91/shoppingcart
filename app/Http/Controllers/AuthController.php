@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         $authManager->register($validated);
 
-        return redirect()->route('signIn')->with('message', 'Success');
+        return redirect()->route('products')->with('message', 'Success');
     }
 
     public function logout(Request $request, AuthManager $authManager)

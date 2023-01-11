@@ -23,7 +23,7 @@
                 @if (Route::has('login'))
                     <a class="btn btn-success btn-sm ml-3" href="{{route('cart')}}">
                         <i class="fa fa-shopping-cart"></i> Cart
-                        <span class="badge badge-light">3</span>
+                        <span class="badge badge-light">{{$cart_quantity}}</span>
                     </a>
 
                     @auth

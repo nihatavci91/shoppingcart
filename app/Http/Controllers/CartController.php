@@ -11,10 +11,11 @@ class CartController extends Controller
     public function index(Request $request, CartManager $cartManager)
     {
         [$cart, $totalPrice] = $cartManager->getCart();
-
+        $cart_quantity = count($cart);
         return view('cart.index', [
             'cart' => $cart,
-            'totalPrice' => $totalPrice
+            'totalPrice' => $totalPrice,
+            'cart_quantity' => $cart_quantity
         ]);
     }
 
@@ -41,7 +42,7 @@ class CartController extends Controller
 
         $cartManager->updateQuantity($validated['product_id'], $validated['quantity']);
 
-        return redirect()->route('cart')->with('message', 'Product Quantity Updated...');
+        return response()->json('success');
     }
 
     public function destroy(Request $request, CartManager $cartManager)
@@ -59,7 +60,7 @@ class CartController extends Controller
 
         $cartManager->deleteProductFromCart($validated['product_id']);
 
-        return redirect()->route('cart')->with('message', 'Product Removed From Cart...');
+        return response()->json('success');
     }
 
     public function applyCoupon(Request $request, CartManager $cartManager)

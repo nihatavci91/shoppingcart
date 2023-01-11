@@ -60,7 +60,7 @@
             <label for="floatingPassword">Password</label>
         </div>
         <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" name="repassword" required>
+            <input type="password" class="form-control" id="floatingPassword" name="password_confirmation" required>
             <label for="floatingPassword">Re Password</label>
         </div>
 

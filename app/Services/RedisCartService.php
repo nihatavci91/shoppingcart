@@ -81,7 +81,7 @@ class RedisCartService implements CartServiceInterface
     {
         $cartProduct = $this->getProduct($productId);
 
-        $cartProduct['quantity'] += $quantity;
+        $cartProduct['quantity'] = $quantity;
 
         Redis::hmset($this->cartKey(), $this->productKey($productId), $this->encodeArray($cartProduct));
 
