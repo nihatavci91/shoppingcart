@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Business\CartManager;
 use Config;
 use Iyzipay\Request;
 
@@ -21,24 +22,26 @@ class PaymentService  {
 
     public function start($data)
     {
+        $cart = (new RedisCartService())->getCart();
         $expiration = str_split($data['cc-expiration'],2);
         $expiration_year = '20'. + $expiration[1];
         $expiration_month = $expiration[0];
         $ccname = $data['cc-name'];
         $ccnumber = $data['cc-number'];
-
+        $price = $data['price'];
         $cvv = $data['cc-cvv'];
+
         $request = new \Iyzipay\Request\CreatePaymentRequest();
         $request->setLocale(\Iyzipay\Model\Locale::TR);
         $request->setConversationId("123456789");
-        $request->setPrice("1");
-        $request->setPaidPrice("1.2");
+        $request->setPrice("$price");
+        $request->setPaidPrice((float)"$price");
         $request->setCurrency(\Iyzipay\Model\Currency::TL);
         $request->setInstallment(1);
         $request->setBasketId("B67832");
         $request->setPaymentChannel(\Iyzipay\Model\PaymentChannel::WEB);
         $request->setPaymentGroup(\Iyzipay\Model\PaymentGroup::PRODUCT);
-        $request->setCallbackUrl("https://www.merchant.com/callback");
+        $request->setCallbackUrl("http://localhost/checkout/success");
         $paymentCard = new \Iyzipay\Model\PaymentCard();
         $paymentCard->setCardHolderName("$ccname");
         $paymentCard->setCardNumber("$ccnumber");
@@ -77,30 +80,30 @@ class PaymentService  {
         $billingAddress->setZipCode("34742");
         $request->setBillingAddress($billingAddress);
         $basketItems = array();
-        $firstBasketItem = new \Iyzipay\Model\BasketItem();
-        $firstBasketItem->setId("BI101");
-        $firstBasketItem->setName("Binocular");
-        $firstBasketItem->setCategory1("Collectibles");
-        $firstBasketItem->setCategory2("Accessories");
-        $firstBasketItem->setItemType(\Iyzipay\Model\BasketItemType::PHYSICAL);
-        $firstBasketItem->setPrice("0.3");
-        $basketItems[0] = $firstBasketItem;
-        $secondBasketItem = new \Iyzipay\Model\BasketItem();
-        $secondBasketItem->setId("BI102");
-        $secondBasketItem->setName("Game code");
-        $secondBasketItem->setCategory1("Game");
-        $secondBasketItem->setCategory2("Online Game Items");
-        $secondBasketItem->setItemType(\Iyzipay\Model\BasketItemType::VIRTUAL);
-        $secondBasketItem->setPrice("0.5");
-        $basketItems[1] = $secondBasketItem;
-        $thirdBasketItem = new \Iyzipay\Model\BasketItem();
-        $thirdBasketItem->setId("BI103");
-        $thirdBasketItem->setName("Usb");
-        $thirdBasketItem->setCategory1("Electronics");
-        $thirdBasketItem->setCategory2("Usb / Cable");
-        $thirdBasketItem->setItemType(\Iyzipay\Model\BasketItemType::PHYSICAL);
-        $thirdBasketItem->setPrice("0.2");
-        $basketItems[2] = $thirdBasketItem;
+        foreach ($cart as $key => $item) {
+            if ($item['quantity'] > 1) {
+                for ($i = 0; $i < $item['quantity']; $i++) {
+                    $basketItem = new  \Iyzipay\Model\BasketItem();
+                    $basketItem->setId($item['productId']);
+                    $basketItem->setName($item['title']);
+                    $basketItem->setCategory1("Collection");
+                    $basketItem->setItemType(\Iyzipay\Model\BasketItemType::PHYSICAL);
+                    $basketItem->setPrice((float)$item['price']);
+
+                    $basketItems[] = $basketItem;
+                }
+            } else {
+                $basketItem = new \Iyzipay\Model\BasketItem();
+                $basketItem->setId($item['productId']);
+                $basketItem->setName($item['title']);
+                $basketItem->setCategory1("Collection");
+                $basketItem->setItemType(\Iyzipay\Model\BasketItemType::PHYSICAL);
+                $basketItem->setPrice((float)$item['price']);
+
+                $basketItems[] = $basketItem;
+            }
+        }
+
         $request->setBasketItems($basketItems);
 
         $threedsInitialize = \Iyzipay\Model\ThreedsInitialize::create($request,$this->config);
