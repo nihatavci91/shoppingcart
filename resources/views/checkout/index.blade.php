@@ -54,10 +54,16 @@
                 <ul class="list-group mb-3">
                     @foreach($cart as $key => $item)
                         <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
+                            <div class="col-md-4">
                                 <h6 class="my-0">{{$item['title']}}</h6>
                             </div>
-                            <span class="text-muted">{{$item['price']}} ₺</span>
+                            <div class="col-md-4">
+                                <span class="">{{$item['quantity']}} quantity</span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted">{{$item['price']}} ₺</span>
+
+                            </div>
                         </li>
                     @endforeach
                     <li class="list-group-item d-flex justify-content-between">
@@ -136,7 +142,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="cc-number" class="form-label">Credit card number</label>
+                            <label for="cc-number" class="form-label">Credit card number</label> <span>Example Card: 5528790000000008</span>
                             <input type="text" class="form-control" id="cc-number" name="cc-number" placeholder="" required>
                             <div class="invalid-feedback">
                                 Credit card number is required
@@ -181,6 +187,6 @@
 
 <script src="{{asset('assets/dist/js/bootstrap.bundle.min.js')}}"></script>
 
-<script src="form-validation.js"></script>
+<script src="{{asset('assets/dist/js/form-validation.js')}}"></script>
 </body>
 </html>

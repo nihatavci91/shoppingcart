@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Business\CartManager;
+use App\Business\PaymentManager;
 use App\Services\PaymentService;
-use App\Services\RedisCartService;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
@@ -26,10 +26,12 @@ class CheckoutController extends Controller
         return (new PaymentService())->start($data)->getHtmlContent();
     }
 
-    public function success(Request $request)
+    public function success(Request $request, PaymentManager $paymentManager)
     {
-        //kaydet
-        dd($request);
-        return view('welcome');
+
+        $paymentManager->create($request->all());
+
+
+        return view('checkout.success');
     }
 }
