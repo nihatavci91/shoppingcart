@@ -1,5 +1,5 @@
 1. Clone the project:
-git clone https://github.com/emrebbozkurt/php-use-case.git
+git clone https://github.com/nihatavci91/shoppingcart.git
 
 2. Starting the docker containers: 
    a) docker-compose -f docker-compose.yml build
@@ -14,5 +14,5 @@ git clone https://github.com/emrebbozkurt/php-use-case.git
 
 6. php artisan migrate --seed
 
-Usage :localhost
+Usage :http://localhost/
 
