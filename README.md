@@ -1,8 +1,9 @@
 1. Clone the project:
 git clone https://github.com/emrebbozkurt/php-use-case.git
 
-2. Starting the docker containers:
-docker-compose up -d --build
+2. Starting the docker containers: 
+   a) docker-compose -f docker-compose.yml build
+   b) docker-compose -f docker-compose.yml up -d
 
 3. Copy .env.example file and rename to .env
 
