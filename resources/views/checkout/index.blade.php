@@ -75,7 +75,8 @@
             </div>
             <div class="col-md-7 col-lg-8">
                 <h4 class="mb-3">Billing address</h4>
-                <form class="needs-validation" novalidate action="{{route('checkout.process')}}" method="GET">
+                <form class="needs-validation" novalidate action="{{route('checkout.process')}}" method="POST">
+                    @csrf
                     <div class="row g-3">
                         <div class="col-sm-6">
                             <label for="firstName" class="form-label">First name</label>
@@ -167,7 +168,7 @@
                     </div>
 
                     <hr class="my-4">
-                    <input type="hidden" name="price" value="{{$total_price}}">
+
                     <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
                 </form>
             </div>

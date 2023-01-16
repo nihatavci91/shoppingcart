@@ -1,11 +1,10 @@
 <?php
 namespace App\Business;
 
+use App\Handler\CartHandler;
 use App\Models\User;
-use App\Operations\CartHandler;
 use App\Repository\UserRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthManager
 {
@@ -29,7 +28,7 @@ class AuthManager
         if (!$status) {
             return false;
         }
-/*
+
         $cart = session('cart');
 
         if ($cart !== null) {
@@ -38,7 +37,7 @@ class AuthManager
             $cartService->cartBulkInsert($cart);
             session()->forget('cart');
         }
-*/
+
         return true;
     }
 
@@ -50,7 +49,19 @@ class AuthManager
     {
         $data['password'] = bcrypt($data['password']);
 
-        return $this->userRepository->create($data);
+        $user = $this->userRepository->create($data);
+        \auth()->login($user);
+        $cart = session('cart');
+
+        if ($cart !== null) {
+            $cartService = CartHandler::handler();
+
+            $cartService->cartBulkInsert($cart);
+            session()->forget('cart');
+        }
+
+        return $user;
+
     }
 
     public function logout()

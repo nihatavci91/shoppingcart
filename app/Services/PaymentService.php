@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Business\CartManager;
 use Config;
+use Illuminate\Support\Facades\Session;
 use Iyzipay\Request;
 
 class PaymentService  {
@@ -23,31 +24,31 @@ class PaymentService  {
     public function start($data)
     {
         $cart = (new RedisCartService())->getCart();
+        $coupon = \session()->has('coupon') ? \session('coupon')['discount'] : 0;
+
         $expiration = str_split($data['cc-expiration'],2);
         $expiration_year = '20'. + $expiration[1];
         $expiration_month = $expiration[0];
         $ccname = $data['cc-name'];
         $ccnumber = $data['cc-number'];
-        $price = $data['price'];
+        $price = 0;
         $cvv = $data['cc-cvv'];
 
         $request = new \Iyzipay\Request\CreatePaymentRequest();
         $request->setLocale(\Iyzipay\Model\Locale::TR);
         $request->setConversationId("123456789");
-        $request->setPrice("$price");
-        $request->setPaidPrice((float)"$price");
         $request->setCurrency(\Iyzipay\Model\Currency::TL);
         $request->setInstallment(1);
         $request->setBasketId("B67832");
         $request->setPaymentChannel(\Iyzipay\Model\PaymentChannel::WEB);
         $request->setPaymentGroup(\Iyzipay\Model\PaymentGroup::PRODUCT);
-        $request->setCallbackUrl("http://localhost/checkout/success");
+        $request->setCallbackUrl("http://localhost/checkout/success?user_id=".auth()->id());
         $paymentCard = new \Iyzipay\Model\PaymentCard();
-        $paymentCard->setCardHolderName("$ccname");
-        $paymentCard->setCardNumber("$ccnumber");
-        $paymentCard->setExpireMonth("$expiration_month");
-        $paymentCard->setExpireYear("$expiration_year");
-        $paymentCard->setCvc("$cvv");
+        $paymentCard->setCardHolderName($ccname);
+        $paymentCard->setCardNumber($ccnumber);
+        $paymentCard->setExpireMonth($expiration_month);
+        $paymentCard->setExpireYear($expiration_year);
+        $paymentCard->setCvc($cvv);
         $paymentCard->setRegisterCard(0);
         $request->setPaymentCard($paymentCard);
         $buyer = new \Iyzipay\Model\Buyer();
@@ -79,6 +80,7 @@ class PaymentService  {
         $billingAddress->setAddress("Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1");
         $billingAddress->setZipCode("34742");
         $request->setBillingAddress($billingAddress);
+
         $basketItems = array();
         foreach ($cart as $key => $item) {
             if ($item['quantity'] > 1) {
@@ -88,8 +90,9 @@ class PaymentService  {
                     $basketItem->setName($item['title']);
                     $basketItem->setCategory1("Collection");
                     $basketItem->setItemType(\Iyzipay\Model\BasketItemType::PHYSICAL);
-                    $basketItem->setPrice((float)$item['price']);
-
+                    $newPrice = $this->calculatePrice($item['price'],$coupon);
+                    $basketItem->setPrice((float)$newPrice);
+                    $price+= $newPrice;
                     $basketItems[] = $basketItem;
                 }
             } else {
@@ -98,17 +101,27 @@ class PaymentService  {
                 $basketItem->setName($item['title']);
                 $basketItem->setCategory1("Collection");
                 $basketItem->setItemType(\Iyzipay\Model\BasketItemType::PHYSICAL);
-                $basketItem->setPrice((float)$item['price']);
-
+                $newPrice = $this->calculatePrice($item['price'],$coupon);
+                $basketItem->setPrice((float)$newPrice);
+                $price+= $newPrice;
                 $basketItems[] = $basketItem;
             }
         }
 
         $request->setBasketItems($basketItems);
+        $request->setPrice($price);
+        $request->setPaidPrice((float)$price);
+
 
         $threedsInitialize = \Iyzipay\Model\ThreedsInitialize::create($request,$this->config);
 
         return $threedsInitialize;
     }
 
+    public function calculatePrice($price, $discountPercent)
+    {
+        $discount = $price * ($discountPercent / 100);
+        return $price - $discount;
+
+    }
 }

@@ -31,7 +31,7 @@ Route::group(['middleware' => ['guest']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-    Route::get('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 });
 Route::post('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 
