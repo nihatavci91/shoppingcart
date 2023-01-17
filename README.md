@@ -1,18 +1,34 @@
-1. Clone the project:
-git clone https://github.com/nihatavci91/shoppingcart.git
+1. <p>Clone the project: </p><br />
+<p>git clone https://github.com/nihatavci91/shoppingcart.git</p>
 
-2. Starting the docker containers: 
-   a) docker-compose -f docker-compose.yml build
-   b) docker-compose -f docker-compose.yml up -d
+<hr />
 
-3. Copy .env.example file and rename to .env
+2. <p>Starting the docker containers:</p> 
+   <p>a) docker-compose -f docker-compose.yml build</p><br />
+   <p>b) docker-compose -f docker-compose.yml up -d</p><br />
 
-4. Install packages: composer install
+<hr />
 
-5. Generate the application key:
-   php artisan key:generate
+3. <p>Copy .env.example file and rename to .env </p><br />
 
-6. php artisan migrate --seed
+<hr />
 
-Usage :http://localhost/
+4. <p>Install packages: composer install</p><br />
+
+<hr />
+
+5. <p>Generate the application key:</p><br />
+   <p>php artisan key:generate</p><br />
+
+<hr />
+
+6. <p>docker exec -ti laravel-app bash</p><br /> 
+
+<hr />
+
+7. <p>php artisan migrate --seed</p><br />
+
+<hr />
+
+Usage: <a href="http://localhost/">localhost</a>
 

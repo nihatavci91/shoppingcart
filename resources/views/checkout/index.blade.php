@@ -46,33 +46,6 @@
         </div>
 
         <div class="row g-5">
-            <div class="col-md-5 col-lg-4 order-md-last">
-                <h4 class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-primary">Your cart</span>
-                    <span class="badge bg-primary rounded-pill">{{$cart_quantity}}</span>
-                </h4>
-                <ul class="list-group mb-3">
-                    @foreach($cart as $key => $item)
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div class="col-md-4">
-                                <h6 class="my-0">{{$item['title']}}</h6>
-                            </div>
-                            <div class="col-md-4">
-                                <span class="">{{$item['quantity']}} quantity</span>
-                            </div>
-                            <div class="col-md-4">
-                                <span class="text-muted">{{$item['price']}} ₺</span>
-
-                            </div>
-                        </li>
-                    @endforeach
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Total Price</span>
-                        <strong>{{$total_price}} ₺</strong>
-                    </li>
-                </ul>
-
-            </div>
             <div class="col-md-7 col-lg-8">
                 <h4 class="mb-3">Billing address</h4>
                 <form class="needs-validation" novalidate action="{{route('checkout.process')}}" method="POST">
